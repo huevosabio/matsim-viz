@@ -1,0 +1,22 @@
+{
+  "name": "matsim-viz",
+  "description": "A visualization of MATSIM results",
+  "main": "index.html",
+  "authors": [
+    "Ramon Iglesias"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/huevosabio/matsim-viz",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "^4.5.0",
+    "jquery": "^3.1.1"
+  }
+}

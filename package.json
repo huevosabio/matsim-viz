@@ -1,0 +1,22 @@
+{
+  "name": "matsim-viz",
+  "version": "0.0.1",
+  "description": "A visualization of MATSIM results",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/huevosabio/matsim-viz.git"
+  },
+  "author": "Ramon Iglesias",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/huevosabio/matsim-viz/issues"
+  },
+  "homepage": "https://github.com/huevosabio/matsim-viz#readme",
+  "dependencies": {
+    "d3": "^4.5.0"
+  }
+}
