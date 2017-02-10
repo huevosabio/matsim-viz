@@ -43,3 +43,7 @@ venv/
 
 # data
 testdata/
+
+# other
+*.DS_Store
+.ipynb_checkpoints/
