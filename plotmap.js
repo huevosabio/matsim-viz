@@ -69,7 +69,7 @@ function plotMap(data, mapid) {
      		//-- 2 coord, 3 rgb colors depend on status
      		switch (row[i+2]){
      			case 0:
-     				rgb = [34, 139, 34];
+        	    	rgb = [255, 255, 255];
         	        break;
         	    case 1:
         	        rgb = [0, 0, 128];
@@ -77,6 +77,9 @@ function plotMap(data, mapid) {
         	    case 2:
         	        rgb = [128, 0, 0];
         	        break;
+        	    default:
+        	    	rgb = [255, 255, 255];
+        	    	break
         	}
         	state.push(pixel.x, pixel.y, rgb[0], rgb[1], rgb[2]);
         }

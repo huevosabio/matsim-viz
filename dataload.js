@@ -1,6 +1,6 @@
 var chartSize = {
 		width: document.getElementById('charts').clientWidth,
-		height: 200,
+		height: document.getElementById('charts').clientHeight,
     	margin: {top: 20, right: 16, bottom: 40, left: 50}
 	};
 
