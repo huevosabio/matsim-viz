@@ -3,6 +3,11 @@
 <head>
     <title>Many Points with  leaflet WebGL</title>
     <meta charset="utf-8">
+    <!-- bower:js -->
+    <script src="bower_components/d3/d3.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <!-- endbower -->
 
     <style>
         html, body {
@@ -16,9 +21,44 @@
         #map {
             position: absolute;
             height: 100%;
-            width: 100%;
+            width: 50%;
             background-color: #333;
         }
+
+        .ticks {
+  font: 10px sans-serif;
+}
+
+.track,
+.track-inset,
+.track-overlay {
+  stroke-linecap: round;
+}
+
+.track {
+  stroke: #000;
+  stroke-opacity: 0.3;
+  stroke-width: 10px;
+}
+
+.track-inset {
+  stroke: #ddd;
+  stroke-width: 8px;
+}
+
+.track-overlay {
+  pointer-events: stroke;
+  stroke-width: 50px;
+  cursor: crosshair;
+}
+
+.handle {
+  fill: #fff;
+  stroke: #000;
+  stroke-opacity: 0.5;
+  stroke-width: 1.25px;
+}
+
     </style>
     <!-- vertex shader -->
     <script id="vshader" type="x-shader/x-vertex">
@@ -104,8 +144,17 @@
 
 </head>
 <body>
-    <div id="map"></div>
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+    <div id="left" style="width: 50%; float: left; height:100%">
+        <div>
+            <div id="map"></div>
+            <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+        </div>
+    </div>
+        <div id="charts" style="width: 50%; float: left; height:100%">
+            <svg width="500" height="900"></svg>
+        </div>
+    </div>
+    
     <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
     <script src="http://www.sumbera.com/gist/js/leaflet/canvas/L.CanvasOverlay.js"></script>
     <!-- <script src="http://www.sumbera.com/gist/86T.json" charset="utf-8"></script> -->
@@ -178,26 +227,30 @@
             vertArray,
             fsize;
 
-        $.getJSON('testdata/single_car.json', function(d){
+        $.getJSON('testdata/2hr_min.json', function(d){
             data = d.loc;
 
-            data.map(function (d, i) {
-                pixel = LatLongToPixelXY(d[0], d[1]);
-                //-- 2 coord, 3 rgb colors depend on status
-                var rgb;
-                switch (d[2]){
-                    case 0:
-                        rgb = [34, 139, 34];
-                        break;
-                    case 1:
-                        rgb = [0, 0, 128];
-                        break;
-                    case 2:
-                        rgb = [128, 0, 0];
-                        break;
-                }
-
-                verts.push([pixel.x, pixel.y, rgb[0], rgb[1], rgb[2]]);
+            data.map(function (row, e) {
+                var state = [];
+                for (var i = 0; (i + 3) < row.length; i += 3) {
+                    pixel = LatLongToPixelXY(row[i], row[i+1]);
+                    //-- 2 coord, 3 rgb colors depend on status
+                    var rgb;
+                    switch (row[i+2]){
+                        case 0:
+                            rgb = [34, 139, 34];
+                            break;
+                        case 1:
+                            rgb = [0, 0, 128];
+                            break;
+                        case 2:
+                            rgb = [128, 0, 0];
+                            break;
+                    }
+                    state.push(pixel.x, pixel.y, rgb[0], rgb[1], rgb[2]);
+                    }
+                verts.push(state);
+                
             });
 
             //drawScene(verts[0]);
@@ -219,12 +272,71 @@
             drawScene(verts[0]);
 
 
+        }).then(function(){
+                    // d3 lever
+        var svg = d3.select("svg"),
+            margin = {right: 50, left: 50},
+            width = +svg.attr("width") - margin.left - margin.right,
+            height = +svg.attr("height");
+
+        var x = d3.scaleLinear()
+            .domain([0, 180])
+            .range([0, width])
+            .clamp(true);
+        
+        var slider = svg.append("g")
+            .attr("class", "slider")
+            .attr("transform", "translate(" + margin.left + "," + height / 2 + ")");
+
+        slider.append("line")
+            .attr("class", "track")
+            .attr("x1", x.range()[0])
+            .attr("x2", x.range()[1])
+            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-inset")
+            .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+            .attr("class", "track-overlay")
+            .call(d3.drag()
+            .on("start.interrupt", function() { slider.interrupt(); })
+            .on("start drag", function() { hue(x.invert(d3.event.x)); }));
+
+        slider.insert("g", ".track-overlay")
+            .attr("class", "ticks")
+            .attr("transform", "translate(0," + 18 + ")")
+            .selectAll("text")
+            .data(x.ticks(10))
+            .enter().append("text")
+            .attr("x", x)
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d + "°"; });
+
+        var handle = slider.insert("circle", ".track-overlay")
+            .attr("class", "handle")
+            .attr("r", 9);
+
+        slider.transition() // Gratuitous intro!
+            .duration(750)
+            .tween("hue", function() {
+            var i = d3.interpolate(0, 70);
+            return function(t) { hue(i(t)); };
         });
-    
+
+
+        // d3 line plots
+        // load data
+
+        });
+
+
+        function hue(h) {
+            handle.attr("cx", x(h));
+            svg.style("background-color", d3.hsl(h, 0.8, 0.8));
+            drawScene(verts[Math.round(h)]);
+        }
 
         function drawScene(vertices){
     
-            numPoints = 1;//data.length;
+            //numPoints = 1;//data.length;
             /*
             vertBuffer = gl.createBuffer();
             vertArray = new Float32Array(verts);
@@ -238,7 +350,6 @@
             gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, fsize*5, fsize*2);
             gl.enableVertexAttribArray(colorLoc);
             */
-            console.log('here');
             gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(vertices));
             glLayer.redraw();
         }

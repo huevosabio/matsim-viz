@@ -47,3 +47,6 @@ testdata/
 # other
 *.DS_Store
 .ipynb_checkpoints/
+
+# bower
+bower_components
