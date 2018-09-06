@@ -1,7 +1,11 @@
 function plotMap(data, mapid) {
 
+    var nyc_coord = [40.7831, -73.9712];
+    var las_coord = [36.1699, -115.1398];
+    var phx_coord = [33.4484, -112.0740];
+
 	// initialize map
-	var leafletMap = L.map(mapid).setView([40.7831, -73.9712], 13);
+	var leafletMap = L.map(mapid).setView(phx_coord, 13);
         L.tileLayer("http://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}.png")
         .addTo(leafletMap);
 
@@ -95,7 +99,7 @@ function plotMap(data, mapid) {
     fsize = vertArray.BYTES_PER_ELEMENT;
     
     gl.bindBuffer(gl.ARRAY_BUFFER, vertBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertArray, gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, vertArray.byteLength * 2, gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(vertLoc, 2, gl.FLOAT, false,fsize*5,0);
     gl.enableVertexAttribArray(vertLoc);
     // -- offset for color buffer

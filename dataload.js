@@ -5,8 +5,8 @@ var chartSize = {
 	};
 
 d3.queue()
-    .defer(d3.csv, 'testdata/2hr_summary.csv')
-    .defer(d3.json, 'testdata/2hr_min.json')
+    .defer(d3.csv, 'testdata/1hr_summary_human.csv')
+    .defer(d3.json, 'testdata/1hr_loc_human.json')
     .await(function(error, summaryData, carData) {
       	if (error) throw error;
 

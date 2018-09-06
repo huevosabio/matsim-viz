@@ -50,14 +50,14 @@ function plotSummary(data, containerId, chartsize, renderFunc) {
         .attr("x1", 0)
         .attr("x2",0);
     
-    /* USE FOR PLAY FUNCTION
+    // USE FOR PLAY FUNCTION
     slider.transition() // Gratuitous intro!
-        .duration(750)
+        .duration(18000)
+        .ease(d3.easeLinear)
         .tween("hue", function() {
-        var i = d3.interpolate(0, 70);
+        var i = d3.interpolateNumber(0, 1800);
         return function(t) { hue(i(t)); };
     });
-*/
 
     // summary data
     var line = d3.line()
